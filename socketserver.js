@@ -1,9 +1,7 @@
-/**
- * Created by hxsd on 2016/12/9.
- */
+
 var socketIo=require('socket.io');
-var users=[];
-var userssocket={};
+var users=[];//用来保存已登录用户
+var userssocket={};//保存用户的socket
 module.exports=function(httpserver){
     var socketserver=socketIo.listen(httpserver);
     socketserver.on('connect',function(socket){
@@ -12,7 +10,7 @@ module.exports=function(httpserver){
             socketname=data.name;
             var type=data.type;
             switch (type){
-                case 101:
+                case 101://发送登录响应
                     var check=checkname(data);
                     if(check){
                         userssocket[data.nickname]=socket;
@@ -33,14 +31,14 @@ module.exports=function(httpserver){
                     break;
 
 
-                case 200:
+                case 200://处理聊天请求
                     handleSays(socket,data);
                     break;
             }
 
         })
 
-        socket.on('private',function(data){
+        socket.on('private',function(data){//处理私聊
             console.log(data);
             data.type=105;
             userssocket[data.to].send(data);
@@ -48,7 +46,7 @@ module.exports=function(httpserver){
             socket.send(data);
         })
 
-        socket.on('disconnect',function(){
+        socket.on('disconnect',function(){//用户退出
 
             for(var i=0;i<users.length;i++){
                 var user=users[i];

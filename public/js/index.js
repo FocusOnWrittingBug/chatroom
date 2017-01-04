@@ -43,16 +43,16 @@ $(function(){
     var clientsocket=io();
     $('.login_btn').on('click',function(){
         var myName=$('.nickname').val();
-        if(myName.replace(/^\s+|\s+$/g, "")==''){
+        if(myName.replace(/^\s+|\s+$/g, "")==''){  //用户名非空验证
             $('.nickname').val('');
             $('.nicknameTip').slideDown();
             setTimeout(function(){
                 $('.nicknameTip').slideUp();
             },1000)
         }else {
-            thisname=myName;
-            thislogo=getlogo();
-            var msg={
+            thisname=myName;        //保存客户端用户名
+            thislogo=getlogo();     //保存客户端头像
+            var msg={               //发送登录请求
                 type:101,
                 nickname:myName,
                 usersexual:getsexual(),
@@ -68,7 +68,7 @@ $(function(){
             $('.login_btn').trigger('click');
         }
     })
-    $('.send').on('click',function(){
+    $('.send').on('click',function(){               //聊天窗口非空验证
         var chattxt=$('.chat_text').val();
         if(chattxt.replace(/^\s+|\s+$/g, "")==''){
             $('.chat_text').val('');
@@ -77,7 +77,7 @@ $(function(){
                 $('.chatTip').slideUp();
             },1000)
         }else {
-            var msg={
+            var msg={                           //发送聊天请求
                 type:200,
                 chattxt:chattxt,
                 nickname:thisname,
@@ -94,7 +94,7 @@ $(function(){
         }
 
     })
-    $('.icons_list').find('img').each(function(){
+    $('.icons_list').find('img').each(function(){          //发送表情请求
         $(this).on('click',function(){
             var msg={
                 type:200,
@@ -122,7 +122,7 @@ $(function(){
                     $('.chatTip2').slideUp();
                 },1000)
             }else {
-                var msg={
+                var msg={                              //发送私聊消息
                     logo:thislogo,
                     from:thisname,
                     text:$('.chat_text').val(),
@@ -172,32 +172,35 @@ $(function(){
         }
         return sexuallogo;
     }
-    clientsocket.on('message',function(data){
+
+
+
+    clientsocket.on('message',function(data){//请求编号
 
         var type=data.type;
         switch (type){
-            case 100:
+            case 100://自己登录
                 selflogin(data);
                 userlist(data);
                 break;
-            case 101:
+            case 101://别人登录
                 otherslogin(data);
                 userlist(data);
                 break;
-            case 102:
+            case 102://别人退出
                 othersout(data);
                 userlist(data);
                 break;
-            case 200:
+            case 200://自己发言
                 selfSays(data);
                 break;
-            case 201:
+            case 201://别人发言
                 othersSays(data);
                 break;
-            case 104:
+            case 104://自己对别人私聊
                 privateto(data);
                 break;
-            case 105:
+            case 105://别人对自己私聊
                 privatesays(data);
                 break;
         }
